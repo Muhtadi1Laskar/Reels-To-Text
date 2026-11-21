@@ -1,0 +1,44 @@
+{
+    "items": [
+        {
+            "title": "Silk Roads",
+            "creator": null,
+            "recommendation": false
+        },
+        {
+            "title": "The Silk Road",
+            "creator": null,
+            "recommendation": false
+        },
+        {
+            "title": "A New History of the World (by Peter Frankopan)",
+            "creator": null,
+            "recommendation": false
+        },
+        {
+            "title": "The Sleepwalkers: How Europe Went to War in 1914 by Christopher Clark, The War That Ended Peace by Margaret McMillan",
+            "creator": null,
+            "recommendation": false
+        },
+        {
+            "title": "Battle Cry of Freedom by James McPherson",
+            "creator": null,
+            "recommendation": false
+        },
+        {
+            "title": "The Holocaust by Lawrence Reese",
+            "creator": null,
+            "recommendation": false
+        },
+        {
+            "title": "How the Word Is Passed by Clint Smith",
+            "creator": null,
+            "recommendation": false
+        },
+        {
+            "title": "How Europe Underdeveloped Africa by Walter Rodney",
+            "creator": null,
+            "recommendation": false
+        }
+    ]
+}

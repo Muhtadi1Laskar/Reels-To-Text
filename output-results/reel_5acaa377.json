@@ -1,0 +1,29 @@
+{
+    "items": [
+        {
+            "title": "Pachinko by Min Jin Lee",
+            "creator": null,
+            "recommendation": false
+        },
+        {
+            "title": "Blindness by Jose Saramago",
+            "creator": null,
+            "recommendation": false
+        },
+        {
+            "title": "The Secret History by Donna Tartt",
+            "creator": null,
+            "recommendation": false
+        },
+        {
+            "title": "Anton Chekhov's Plays",
+            "creator": null,
+            "recommendation": false
+        },
+        {
+            "title": "Passing by Nella Larson",
+            "creator": null,
+            "recommendation": false
+        }
+    ]
+}
