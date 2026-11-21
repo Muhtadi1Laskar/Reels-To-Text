@@ -1,2 +1,6 @@
 __pycache__/
 *.py[cod]
+
+video/
+output-text/
+output-results/
