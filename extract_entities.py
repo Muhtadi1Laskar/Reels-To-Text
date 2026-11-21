@@ -11,7 +11,6 @@ model = GLiNER.from_pretrained(MODEL_NAME)
 
 def extract_entities(transcript):
     labels = ["movie title", "book title", "author name", "film director"]
-
     entities = model.predict_entities(transcript, labels, threshold=0.4)
 
     results = {"movies": [], "books": [], "authors": [], "directors": []}
