@@ -6,6 +6,8 @@ import argparse
 from utils import generate_file_path, parse_file_name, flatten_video_directory
 
 
+VIDEO_FOLDER_PATH = Path(__file__).resolve().parent
+
 def download_reel(url, output_folder, file_name="sample"):
     ydl_opts = {
         "outtmpl": str(output_folder / file_name),
@@ -21,6 +23,13 @@ def download_reel(url, output_folder, file_name="sample"):
 
 def main():
     file_name, url = parse_file_name()
+    existing_file_path = VIDEO_FOLDER_PATH / "video" / f"{file_name}.mp4"
+    
+    if Path(existing_file_path).exists():
+        print(f"{file_name}.mp4 already exists. Moving on to the next step\n")
+        
+        return None
+    
     output_folder_path = Path("video")
 
     download_folder_path = generate_file_path("video", output_folder_path)

@@ -146,6 +146,55 @@ import ollama
 
 from utils import generate_file_path, parse_file_name
 
+# SYSTEM_PROMPT = """
+# You are a strict named-work extraction system.
+
+# Your task is to identify explicitly mentioned titles of:
+# - Books
+# - Comics and graphic novels
+# - Movies
+# - TV shows
+
+# IMPORTANT RULES:
+
+# 1. Extract only actual named works.
+# 2. A title must be a proper name identifying a specific work.
+# 3. NEVER extract plot descriptions, summaries, character descriptions, 
+# dialogue, ordinary sentences, or recommendations as titles.
+# 4. NEVER convert a description into a title.
+# 5. A sentence describing a story is NOT a title.
+# 6. A character's name is NOT a title unless it is also explicitly
+# the name of a work.
+# 7. If you cannot confidently identify a specific work title,
+# do not include it.
+# 8. Do not invent missing information.
+# 9. Do not infer titles from descriptions.
+# 10. Prefer returning fewer correct results over many uncertain results.
+
+# Examples:
+
+# Input:
+# "I recommend Gideon Falls. It's about a priest arriving in a rural town."
+
+# Correct:
+# {"items": ["Gideon Falls"]}
+
+# Incorrect:
+# {"items": ["A priest arriving in a rural town"]}
+
+# Input:
+# "Something Is Killing the Children is a fantastic comic.
+# Children are disappearing in the woods."
+
+# Correct:
+# {"items": ["Something Is Killing the Children"]}
+
+# Incorrect:
+# {"items": ["Children are disappearing in the woods"]}
+
+# Return valid JSON only.
+# """
+
 SYSTEM_PROMPT = """
 You are a strict named-work extraction system.
 
@@ -159,7 +208,7 @@ IMPORTANT RULES:
 
 1. Extract only actual named works.
 2. A title must be a proper name identifying a specific work.
-3. NEVER extract plot descriptions, summaries, character descriptions, 
+3. NEVER extract plot descriptions, summaries, character descriptions,
 dialogue, ordinary sentences, or recommendations as titles.
 4. NEVER convert a description into a title.
 5. A sentence describing a story is NOT a title.
@@ -174,26 +223,28 @@ do not include it.
 Examples:
 
 Input:
-"I recommend Gideon Falls. It's about a priest arriving in a rural town."
+"I recommend Gideon Falls. It's about a priest arriving in
+a rural town."
 
 Correct:
-{"items": ["Gideon Falls"]}
+Gideon Falls
 
 Incorrect:
-{"items": ["A priest arriving in a rural town"]}
+"A priest arriving in a rural town"
 
 Input:
 "Something Is Killing the Children is a fantastic comic.
 Children are disappearing in the woods."
 
 Correct:
-{"items": ["Something Is Killing the Children"]}
+Something Is Killing the Children
 
 Incorrect:
-{"items": ["Children are disappearing in the woods"]}
+"Children are disappearing in the woods"
 
 Return valid JSON only.
 """
+
 
 FORMAT_SCHEMA = {
     "type": "object",
