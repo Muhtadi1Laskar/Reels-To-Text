@@ -14,9 +14,17 @@ def download_reel(url, output_folder, file_name="sample"):
         "format": "bestvideo+bestaudio/best",
         "merge_output_format": "mp4",
     }
-    
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        info = ydl.extract_info(url)
+        account_name = info.get("uploader") or info.get("channel")
+        # print("\n\n")
+        # print(info)
+        # print(account_name)
+        # print(info.get("uploader_id"))
+        # print("\n\n")
+        for key, value in info.items():
+            print(key, value)
         ydl.download([url])
 
 

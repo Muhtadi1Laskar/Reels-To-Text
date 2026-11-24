@@ -1,144 +1,3 @@
-# import json
-# import ollama
-# from utils import generate_file_path, parse_file_name
-
-
-# def extract_recommendations(transcript):
-#     response = ollama.chat(
-#         model="qwen2.5:1.5b",
-#         messages=[
-#             {
-#                 "role": "system",
-#                 "content": """
-#         You are a strict named-work extraction system.
-
-#         Your task is to identify explicitly mentioned titles of:
-#         - Books
-#         - Comics and graphic novels
-#         - Movies
-#         - TV shows
-
-#         IMPORTANT RULES:
-
-#         1. Extract only actual named works.
-#         2. A title must be a proper name identifying a specific work.
-#         3. NEVER extract plot descriptions, summaries, character descriptions,
-#         dialogue, ordinary sentences, or recommendations as titles.
-#         4. NEVER convert a description into a title.
-#         5. A sentence describing a story is NOT a title.
-#         6. A character's name is NOT a title unless it is also explicitly
-#         the name of a work.
-#         7. If you cannot confidently identify a specific work title,
-#         do not include it.
-#         8. Do not invent missing information.
-#         9. Do not infer titles from descriptions.
-#         10. Prefer returning fewer correct results over many uncertain results.
-
-#         Examples:
-
-#         Input:
-#         "I recommend Gideon Falls. It's about a priest arriving in
-#         a rural town."
-
-#         Correct:
-#         Gideon Falls
-
-#         Incorrect:
-#         "A priest arriving in a rural town"
-
-#         Input:
-#         "Something Is Killing the Children is a fantastic comic.
-#         Children are disappearing in the woods."
-
-#         Correct:
-#         Something Is Killing the Children
-
-#         Incorrect:
-#         "Children are disappearing in the woods"
-
-#         Return valid JSON only.
-#     """,
-#             },
-#             {
-#                 "role": "user",
-#                 "content": f"""
-#     Extract explicitly named works from this transcript:
-
-#     {transcript}
-
-#     Return this JSON structure:
-
-#     {{
-#         "items": [
-#             {{
-#                 "title": "Exact title as mentioned",
-#                 "creator": null,
-#                 "recommendation": false
-#             }}
-#         ]
-#     }}
-
-#     Return an empty items array if no identifiable works are mentioned.
-# """,
-#             },
-#         ],
-#         format="json",
-#         options={"temperature": 0, "num_predict": 2000, "num_ctx": 4096},
-#     )
-
-#     print(response.message.content)
-
-#     content = response.message.content
-
-
-#     # print("\n========== OLLAMA DIAGNOSTICS ==========")
-#     # print("Request completed:", response.done)
-#     # print("Done reason:", getattr(response, "done_reason", "Not available"))
-#     # print("Prompt tokens:", getattr(response, "prompt_eval_count", "Not available"))
-#     # print("Generated tokens:", getattr(response, "eval_count", "Not available"))
-
-#     # print("\nRaw response:")
-#     # print(repr(content))
-
-#     # print("\nResponse length:", len(content))
-#     # print("========================================\n")
-
-#     try:
-#         result = json.loads(content)
-#         # return response.message.content
-#         return result
-
-#     except json.JSONDecodeError as error:
-#         print("JSON parsing failed!")
-#         print("Error:", error)
-#         print("Problematic section:")
-#         print(repr(content[max(0, error.pos - 100) : error.pos + 100]))
-
-#         return None
-
-
-# def read_files(path):
-#     with open(path, "r", encoding="utf-8") as file:
-#         content = file.read()
-
-#         return content
-
-
-# if __name__ == "__main__":
-#     file_name, url = parse_file_name()
-#     file_name = f"{file_name}.txt"
-
-#     print("Running", file_name, url)
-
-#     text_file_path = generate_file_path("output-text", file_name)
-
-#     transcript = read_files(text_file_path)
-
-#     results = extract_recommendations(transcript)
-
-#     print(json.dumps(results, indent=4, ensure_ascii=False))
-
-
 import json
 from pathlib import Path
 
@@ -154,6 +13,8 @@ from utils import generate_file_path, parse_file_name
 # - Comics and graphic novels
 # - Movies
 # - TV shows
+# - Manga
+# - Anime
 
 # IMPORTANT RULES:
 
@@ -195,55 +56,27 @@ from utils import generate_file_path, parse_file_name
 # Return valid JSON only.
 # """
 
+
 SYSTEM_PROMPT = """
-You are a strict named-work extraction system.
+You extract book, comic, manga, anime, movie, and TV show titles from text.
 
-Your task is to identify explicitly mentioned titles of:
-- Books
-- Comics and graphic novels
-- Movies
-- TV shows
+Find every explicitly mentioned work.
 
-IMPORTANT RULES:
+For each work:
+- Return only its actual title.
+- Do not include the author's or director's name.
+- If the text says "Dune by Frank Herbert", return "Dune".
+- If the text says "I, Robot by Isaac Asimov", return "I, Robot".
+- Do not invent titles.
+- Do not extract plot descriptions or ordinary sentences.
+- Do not exclude a title simply because it is mentioned rather than recommended.
 
-1. Extract only actual named works.
-2. A title must be a proper name identifying a specific work.
-3. NEVER extract plot descriptions, summaries, character descriptions,
-dialogue, ordinary sentences, or recommendations as titles.
-4. NEVER convert a description into a title.
-5. A sentence describing a story is NOT a title.
-6. A character's name is NOT a title unless it is also explicitly
-the name of a work.
-7. If you cannot confidently identify a specific work title,
-do not include it.
-8. Do not invent missing information.
-9. Do not infer titles from descriptions.
-10. Prefer returning fewer correct results over many uncertain results.
+Return JSON in this format:
+{"items": ["Title 1", "Title 2"]}
 
-Examples:
+Return an empty array only if no identifiable works are mentioned.
+# """
 
-Input:
-"I recommend Gideon Falls. It's about a priest arriving in
-a rural town."
-
-Correct:
-Gideon Falls
-
-Incorrect:
-"A priest arriving in a rural town"
-
-Input:
-"Something Is Killing the Children is a fantastic comic.
-Children are disappearing in the woods."
-
-Correct:
-Something Is Killing the Children
-
-Incorrect:
-"Children are disappearing in the woods"
-
-Return valid JSON only.
-"""
 
 
 FORMAT_SCHEMA = {
@@ -260,7 +93,7 @@ FORMAT_SCHEMA = {
 
 def extract_recommendations(transcript):
     response = ollama.chat(
-        model="qwen2.5:1.5b",  # upgrade to qwen2.5:7b or qwen3:4b if quality is poor
+        model="qwen2.5:1.5b",
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
             {
@@ -286,7 +119,6 @@ def extract_recommendations(transcript):
 
     content = response.message.content
 
-    # Truncated output is the failure mode you hit before — detect it explicitly
     if response.done_reason == "length":
         print("Output truncated!")
         print("Prompt tokens:", response.prompt_eval_count)
@@ -303,7 +135,6 @@ def extract_recommendations(transcript):
         print(repr(content[max(0, error.pos - 100) : error.pos + 100]))
         return None
 
-    # Dedupe while preserving order (insurance against small-model repetition loops)
     titles = list(
         dict.fromkeys(
             t.strip()
@@ -312,7 +143,7 @@ def extract_recommendations(transcript):
         )
     )
 
-    # Rebuild your original object shape in Python — costs zero model tokens
+
     return {
         "items": [
             {"title": title, "creator": None, "recommendation": False}
